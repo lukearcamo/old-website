@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Artwork - Luke Arcamo</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&family=Major+Mono+Display&display=swap" rel="stylesheet">        
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="main.css" rel="stylesheet">
+        <link href="galleries.css" rel="stylesheet">
+        <link rel="icon" type="image/png" href="imgs/icon.png">
+    </head>
+    <style>
+        :root, body { background: var(--white); }
+        #home, #cover { color: var(--dark); }
+        #home { animation-delay: 0.5s; }
+        #doorTop { background-color: var(--white); border-color: var(--dark); }
+        #doorBottom { background-color: var(--white); border-color: var(--dark); }
+    </style>
+    <!-- https://stackoverflow.com/questions/3885018/active-pseudo-class-doesnt-work-in-mobile-safari -->
+    <body ontouchstart="">
+        <a id="home" href="index.html"><div class="material-icons" style="font-size: 50px;">home</div></a>
+        <button id="backToTop"><div class="material-icons" style="font-size: 50px;">arrow_upward</div></button>
+
+        <div id="cover">
+            <div id="title" class="enter">
+                <div id="doorTop"></div>
+                <div id="doorBottom"></div>
+                the gAllery of Visions
+                <div id="subtitle">the Artwork of luke ArcAMo</div>
+            </div>
+            <div id="copyright">© Copyright 2021 Luke Arcamo. You may not use my art without my permission.</div>
+        </div>
+
+        <template id="sectionTemplate">
+            <div class="section">
+                <div class="painting">
+                    <img src="abc" draggable="false">
+                </div>
+                <div class="description">
+                    <h2>Title</h2>
+                    <p>Medium - Date</p>
+                    <p>Description</p>
+                </div>
+            </div>
+        </template>
+
+        <div class="series" style="background-color: var(--white); color: var(--dark);">
+            <div class="section">
+                spAces of unnAMed eMotions
+                <div class="seriesDescription">
+                    <p>Digital - May 2020</p>
+                    These studies of liminal spaces were inspired by my room during the pandemic, childhood memories, and images on the internet.
+                </div>
+                <div class="painting" style="width: 100%;">
+                    <img src="imgs/general/spaces_lowres.png" style="width: 100%; max-height: 200vh; padding: 0;">
+                </div>
+            </div>
+            <div class="section" style="margin: 100px 0 0 0;">
+                enVoi
+                <div class="seriesDescription">
+                    <p>Digital - June 2021</p>
+                    My first attempt at a comic strip, which was for a school project. This is my interpretation of the last chapter in Margaret Atwood's <i>The Penelopiad</i>.
+                </div>
+                <div class="painting" style="width: 100%;">
+                    <img src="imgs/general/envoi_site.png" style="width: 100%; max-height: initial; padding: 0;">
+                </div>
+            </div>
+        </div>
+
+        <script type="module">
+            import { artworks } from "./data.js";
+
+            const template = document.getElementById("sectionTemplate");
+            for (const seriesTitle in artworks) {
+                var series = document.createElement("div");
+                series.className = "series";
+                series.textContent = seriesTitle;
+                series.style.backgroundColor = "var(--" + artworks[seriesTitle].bg + ")";
+                series.style.color = "var(--" + artworks[seriesTitle].color + ")";
+
+                if (artworks[seriesTitle].description) {
+                    var seriesDescription = document.createElement("div");
+                    seriesDescription.className = "seriesDescription";
+                    seriesDescription.textContent = artworks[seriesTitle].description;
+                    series.appendChild(seriesDescription);
+                }
+
+                for (const img of artworks[seriesTitle].imgs) {
+                    var clone = template.content.cloneNode(true);
+                    var section = clone.children[0];
+
+                    section.children[0].children[0].src = artworks[seriesTitle].path + img.src;
+                    section.children[1].children[0].textContent = img.title;
+                    section.children[1].children[1].textContent = img.subtitle;
+                    section.children[1].children[2].innerHTML = img.description;
+
+                    series.appendChild(clone);
+                }
+                template.before(series);
+            }
+
+            const title = document.getElementById("title");
+            const copyright = document.getElementById("copyright");
+            const homeBtn = document.getElementById("home");
+            const backToTopBtn = document.getElementById("backToTop");
+            
+            homeBtn.addEventListener("click", e => {
+                homeBtn.style.animation = "1s ease 0s 1 normal both running slideOutTop";
+                backToTopBtn.style.animation = "1s ease 0s 1 normal both running slideOutBottom";
+                copyright.style.animation = "1s ease 0s 1 normal both running slideOutBottom";
+
+                title.classList.remove("enter");
+                setTimeout(() => title.classList.add("exit"), 10);
+
+                document.querySelector(".series").style.backgroundColor = "var(--white)";
+
+                e.preventDefault();
+                setTimeout(() => window.location.href = "index.html#art", 1000);
+            });
+            backToTopBtn.addEventListener("click", () => window.scrollTo(0, 0));
+
+            function inViewport(element) {
+                const rect = element.getBoundingClientRect();
+                const maxHeight = window.innerHeight || document.documentElement.clientHeight;
+                return (rect.top >= 0 && rect.top < maxHeight) || (rect.bottom > 0 && rect.bottom <= maxHeight) || (rect.top < 0 && rect.bottom > maxHeight);
+            }
+
+            function onScroll() {
+                backToTopBtn.style.transform = window.scrollY > 0 ? "translateY(-100%)" : "";
+            }
+            onScroll();
+            addEventListener("scroll", onScroll);
+
+            copyright.innerText = "© Copyright " + new Date().getFullYear() + " Luke Arcamo. You may not use my art without my permission.";
+        </script>
+    </body>
+</html>
