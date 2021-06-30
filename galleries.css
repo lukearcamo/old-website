@@ -1,0 +1,157 @@
+@keyframes slideInTitle { from { transform: translate(-50%, -100%); opacity: 0; } }
+@keyframes slideOutTitle { to { transform: translate(-50%, -100%); opacity: 0; } }
+@keyframes slideInBottom { from { transform: translate(-50%, 200%); opacity: 0; } }
+@keyframes slideOutBottom { to { transform: translate(-50%, 200%); opacity: 0; } }
+
+.section {
+    width: 100%;
+    height: auto;
+    overflow: auto; /* So height is auto extended by children */
+
+    transition: opacity 1s;
+}
+.series {
+    width: 100%;
+    height: auto;
+    font: max(4vmax, 40px) 'Major Mono Display';
+    text-align: center;
+    padding-top: 50px;
+}
+.painting {
+    /* border: 1px solid lime;
+    box-sizing: border-box; */
+    width: 75%;
+    height: auto;
+    float: left;
+}
+img {
+    /* border: 1px solid magenta;
+    box-sizing: border-box; */
+
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 100vh;
+
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+
+    padding: 5%;
+    box-sizing: border-box;
+    margin: 0 auto;
+}
+.description {
+    /* border: 1px solid red;
+    box-sizing: border-box; */
+
+    /* font: 20px Montserrat; */
+    /* font: 2.2vmin Montserrat; */
+    font: 16px Montserrat;
+
+    width: 25%;
+    height: auto;
+    float: left;
+
+    padding: 4% 5% 4% 0;
+    box-sizing: border-box;
+}
+.seriesDescription {
+    /* font: 20px Montserrat; */
+    font: 16px Montserrat;
+    box-sizing: border-box;
+    padding: 1em 5%;
+}
+/* @media screen and (orientation: portrait) { */
+@media only screen and (max-width: 1024px) {
+    .painting {
+        width: 100%;
+    }
+    .description {
+        width: 100%;
+        height: auto;
+
+        padding: 0 5% 75px 5%;
+    }
+}
+#cover {
+    width: 100%;
+    height: 100vh;
+    text-align: center;
+}
+#subtitle {
+    font: bold 0.5em 'Major Mono Display';
+    color: var(--light);
+}
+#copyright {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    font: bold min(22px, 2vmax) Montserrat;
+
+    animation: 1s ease 0s 1 normal both running slideInBottom;
+}
+#title {
+    /* border: 1px solid red; */
+    box-sizing: border-box;
+    padding: 5%;
+    
+    font: max(7vmax, 50px) "Major Mono Display";
+    width: 90%;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    overflow: hidden;
+}
+#doorTop {
+    content: "";
+    /* border: 1px solid blue; */
+    box-sizing: border-box;
+
+    width: 100%;
+    height: 50%;
+
+    position: absolute;
+    top: -48%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+
+    border-bottom: 5px solid;
+}
+#doorBottom {
+    content: "";
+    /* border: 1px solid blue; */
+    box-sizing: border-box;
+    
+    width: 100%;
+    height: 50%;
+
+    position: absolute;
+    bottom: -48%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+
+    border-top: 5px solid;
+}
+#title.enter, #title.enter > #subtitle { animation: 0s ease 0.5s 1 normal both running appear; }
+#title.exit, #title.exit > #subtitle { animation: 0s ease 0.5s 1 reverse both running appear; }
+#title.enter > #doorTop { animation: 1s ease 0s 1 normal both running doorTopAnim; }
+#title.enter > #doorBottom { animation: 1s ease 0s 1 normal both running doorBottomAnim; }
+#title.exit > #doorTop { animation: 1s ease 0s 1 reverse both running doorTopAnim; }
+#title.exit > #doorBottom { animation: 1s ease 0s 1 reverse both running doorBottomAnim; }
+@keyframes appear { from { color: transparent; } }
+/* CANNOT ANIMATE WIDTH PROPERTY -- Triggers reflow */
+@keyframes doorTopAnim {
+    0% { transform: translate(-50%, 100%) scaleX(0.000001); }
+    50% { transform: translate(-50%, 100%); }
+}
+@keyframes doorBottomAnim {
+    0% { transform: translate(-50%, -100%) scaleX(0.000001); }
+    50% { transform: translate(-50%, -100%); }
+}

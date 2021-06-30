@@ -1,0 +1,92 @@
+:root {
+    --white: #FFF2E3;
+    --light: #8A4C34;
+    --accent: #841A00;
+    --dark: #26303C;
+    --black: #0D1116;
+
+    --linkColor: #8080ff;
+    --visitedLinkColor: #ee80ff;
+}
+
+@keyframes slideInTop { from { transform: translateY(-100%); } }
+@keyframes slideOutTop { to { transform: translateY(-100%); } }
+
+body {
+    margin: 0;
+    padding: 0;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-weight: normal;
+    margin: 0;
+}
+#home {
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    left: 0;
+
+    height: 75px;
+    width: 75px;
+
+    background-color: transparent;
+    padding: 0;
+    border: none;
+
+    transition: transform 0.25s;
+    animation: 1s ease 0s 1 normal both running slideInTop;
+}
+#backToTop {
+    position: fixed; 
+    z-index: 5;
+    bottom: -75px;
+    right: 0;
+    
+    height: 75px;
+    width: 75px;
+
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    
+    transition: transform 0.5s;
+
+    mix-blend-mode: exclusion;
+    color: white;
+}
+#home > div, #backToTop > div {
+    transition: transform 0.25s;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    line-height: 75px !important; /* Vertically center one line of text */
+    text-align: center;
+}
+#home > div:active, #backToTop > div:active { transform: scale(1.5, 1.5); }
+.link {
+    color: var(--linkColor);
+    font-weight: bold;
+
+    padding-bottom: 0.3em;
+    text-decoration: none;
+    cursor: pointer;
+
+    background: linear-gradient(var(--linkColor) 0%, var(--linkColor) 100%);
+    /* border-bottom: 4px dotted var(--linkColor); */
+    /* background-position: 0 calc(100% + 4px); */
+    background-position: 0 100%;
+
+    background-repeat: no-repeat;
+    background-size: 0 4px;
+
+    transition: background-size 0.25s;
+}
+.link:active { background-size: 100% 4px; }
+.link:visited {
+    color: var(--visitedLinkColor);
+    background: linear-gradient(var(--visitedLinkColor) 0%, var(--visitedLinkColor) 100%);
+}
+@media (hover: hover) {
+    #home > div:hover, #backToTop > div:hover { transform: scale(1.5, 1.5); }
+    .link:hover { background-size: 100% 4px; }
+}
