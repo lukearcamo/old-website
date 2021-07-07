@@ -199,8 +199,7 @@
 
             // var prevTime;
             function onScroll() {
-                if (window.scrollY > 0) backToTopBtn.style.transform = "translateY(-100%)";
-                else backToTopBtn.style.transform = "";
+                backToTopBtn.style.transform = window.scrollY > 0 ? "translateY(-100%)" : "";
                 
                 // if (Date.now() - prevTime < 100) return;
                 // prevTime = Date.now();
