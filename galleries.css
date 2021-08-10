@@ -7,8 +7,9 @@
     width: 100%;
     height: auto;
     overflow: auto; /* So height is auto extended by children */
-
+    
     transition: opacity 1s;
+    page-break-before: always;
 }
 .series {
     width: 100%;

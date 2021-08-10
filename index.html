@@ -208,7 +208,7 @@
                 <a class="face" id="face_about" href="about.html"></a>
                 <a class="face" id="face_art" href="art.html"></a>
                 <a class="face" id="face_code" href="wip.html"></a>
-                <a class="face" id="face_articles" href="wip.html"></a>
+                <a class="face" id="face_articles" href="articles.html"></a>
             </div>
         </div>
 
@@ -306,7 +306,7 @@
                         e.preventDefault();
                         window.onhashchange = undefined;
                         location.hash = "#" + f.id.slice(5);
-                        setTimeout(() => { window.location.href = f.href; }, 1000);
+                        setTimeout(() => window.location.href = f.href, 1000);
                     });
                 }
 
