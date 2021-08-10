@@ -7,87 +7,13 @@
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&family=Major+Mono+Display&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link href="../main.css" rel="stylesheet">
+        <link href="../articles.css" rel="stylesheet">
         <link rel="icon" type="image/png" href="../imgs/icon.png">
 
         <link rel="stylesheet" href="../highlight/styles/monokai-sublime.min.css">
         <script src="../highlight/highlight.min.js"></script>
         <script src="../highlight/languages/glsl.min.js"></script>
     </head>
-    <style>
-        body { background-color: var(--light); }
-        #home, #backToTop { color: var(--white); }
-        #list {
-            position: absolute;
-            z-index: 5;
-            top: 0;
-            right: 0;
-
-            height: 75px;
-            width: 75px;
-
-            background-color: transparent;
-            padding: 0;
-            border: none;
-
-            transition: transform 0.25s;
-            animation: 1s ease 0s 1 normal both running slideInTop;
-
-            color: var(--white);
-        }
-        @keyframes fadeIn { to { opacity: 0; } }
-        @keyframes fadeOut { from { opacity: 0; } }
-        #fade {
-            position: fixed;
-            width: 100vw;
-            height: 100vh;
-            background-color: var(--accent);
-            z-index: 10;
-            pointer-events: none;
-            animation: 1s ease 0s 1 normal both running fadeIn;
-        }
-        #title {
-            font: max(5vmax, 50px) "Major Mono Display";
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        #subtitle {
-            text-align: center;
-            margin: 2em 0;
-        }
-        .section {
-            color: var(--dark);
-            font: max(2vmin, 16px) Montserrat;
-            padding: 0vh 10% 10vh 10%;
-            overflow: auto;
-        }
-        h1 {
-            font: 6vmin "Major Mono Display";
-            margin-bottom: 20px;
-            font-family: "Major Mono Display";
-        }
-        h2 { font-family: "Major Mono Display"; }
-        .hljs { background: var(--black); }
-        img {
-            display: block;
-            margin: 0 auto 1em auto;
-            max-width: 100%;
-            max-height: 50vh;
-            flex-basis: 0;
-        }
-        .imagesContainer {
-            display: flex;
-            flex-flow: row wrap;
-            align-items: stretch;
-            justify-content: center;
-        }
-        .image {
-            margin: 1%;
-            width: 30%;
-            min-width: 40vh;
-            text-align: center;
-            flex-grow: 1;
-        }
-    </style>
     <!-- https://stackoverflow.com/questions/3885018/active-pseudo-class-doesnt-work-in-mobile-safari -->
     <body ontouchstart="">
         <div id="fade"></div>
