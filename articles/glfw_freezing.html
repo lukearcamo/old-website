@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>GLFW: Prevent freezing on window update - Luke Arcamo</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&family=Major+Mono+Display&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="../main.css" rel="stylesheet">
+        <link rel="icon" type="image/png" href="../imgs/icon.png">
+
+        <link rel="stylesheet" href="../highlight/styles/monokai-sublime.min.css">
+        <script src="../highlight/highlight.min.js"></script>
+        <script src="../highlight/languages/glsl.min.js"></script>
+    </head>
+    <style>
+        body { background-color: var(--light); }
+        #home, #backToTop { color: var(--white); }
+        #list {
+            position: absolute;
+            z-index: 5;
+            top: 0;
+            right: 0;
+
+            height: 75px;
+            width: 75px;
+
+            background-color: transparent;
+            padding: 0;
+            border: none;
+
+            transition: transform 0.25s;
+            animation: 1s ease 0s 1 normal both running slideInTop;
+
+            color: var(--white);
+        }
+        @keyframes fadeIn { to { opacity: 0; } }
+        @keyframes fadeOut { from { opacity: 0; } }
+        #fade {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--accent);
+            z-index: 10;
+            pointer-events: none;
+            animation: 1s ease 0s 1 normal both running fadeIn;
+        }
+        #title {
+            font: max(5vmax, 50px) "Major Mono Display";
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #subtitle {
+            text-align: center;
+            margin: 2em 0;
+        }
+        .section {
+            color: var(--dark);
+            font: max(2vmin, 16px) Montserrat;
+            padding: 0vh 10% 10vh 10%;
+            overflow: auto;
+        }
+        h1 {
+            font: 6vmin "Major Mono Display";
+            margin-bottom: 20px;
+            font-family: "Major Mono Display";
+        }
+        h2 { font-family: "Major Mono Display"; }
+        .hljs { background: var(--black); }
+        img {
+            display: block;
+            margin: 0 auto 1em auto;
+            max-width: 100%;
+            max-height: 50vh;
+            flex-basis: 0;
+        }
+        .imagesContainer {
+            display: flex;
+            flex-flow: row wrap;
+            align-items: stretch;
+            justify-content: center;
+        }
+        .image {
+            margin: 1%;
+            width: 30%;
+            min-width: 40vh;
+            text-align: center;
+            flex-grow: 1;
+        }
+    </style>
+    <!-- https://stackoverflow.com/questions/3885018/active-pseudo-class-doesnt-work-in-mobile-safari -->
+    <body ontouchstart="">
+        <div id="fade"></div>
+
+        <a id="home" href="../index.html"><div class="material-icons" style="font-size: 50px;">home</div></a>
+        <a id="list" href="../articles.html"><div class="material-icons" style="font-size: 50px;">view_list</div></a>
+        <button id="backToTop"><div class="material-icons" style="font-size: 50px;">arrow_upward</div></button>
+
+        <div class="section" style="background-color: var(--accent); color: var(--white); padding-top: 15vh;">
+            <div id="title">glfW: preVent freezing on WindoW updAte</div>
+            <div id="subtitle">By Luke Arcamo — July 8, 2021</div>
+            In the <a class="link" href="https://www.glfw.org/docs/latest/group__window.html#ga37bd57223967b4211d60ca1a0bf3c832">GLFW documentation</a>,
+            it says that "On some platforms, a window move, resize or menu operation will cause event processing to block. This is due to how event processing is designed on those platforms."
+            This can be a problem since it causes the rendering to freeze until the operation is complete.
+            The documentation suggests a fix using the window refresh callback, however personally, I haven't had success with this method since the callback kept triggering constantly,
+            and the documentation also mentions that this method does not work for compositing window systems.
+            Another easy fix is to just ignore the freezing, or make the window fullscreen so there is no window resizing/moving. If this cannot be done,
+            many forum posts I have encountered suggest multithreading, but personally, I have found little information and few examples on how to do this. So, after my own
+            experimentation and research, I wrote this article to help explain this.
+        </div>
+        <div class="section" style="background-color: var(--white); padding-top: 10vh;">
+            <h1>probleM</h1>
+            <p>
+                I'll assume that your regular GLFW code is more or less structured in the standard way, like so:
+            </p>
+<pre><code class="cpp">void initialize() {
+    // Initialize GLFW, OpenGL, etc.
+}
+void draw() {
+    // OpenGL rendering stuff
+}
+int main() {
+    init();
+
+    while(!glfwWindowShouldClose(window)) {
+        draw();
+        glfwPollEvents();
+    }
+
+    // Clean up OpenGL & GLFW
+
+    return 0;
+}</code></pre>
+            <p>
+                Here we can see the issue: when the window is dragged or resized, the program gets stuck at glfwPollEvents() until the window is let go. And, since rendering occurs within
+                in the same loop, it freezes as well. To fix this, we can run these two things on separate threads.
+            </p>
+        </div>
+        <div class="section" style="background-color: var(--white);">
+            <h1>solution</h1>
+            <h2>bAsic threAd usAge</h2>
+            <p>
+                From C++11 onward, threading is supported using the <code>&lt;thread&gt;</code> header.
+                Creating a thread is simple:
+                <code>std::thread myThread(function_to_run_on_thread);</code>
+            </p>
+            <p>
+                To finish the thread after the function returns, use <code>myThread.join();</code> on the main thread, which will pause the main thread until the other thread has finished and returned.
+                This function should be called near the end of the main() function, so that the other thread finishes smoothly without any errors or warnings.
+            </p>
+            <h2>putting opengl contexts on other threAds</h2>
+            <p>
+                According to the GLFW documentation, the event processing functions <code>glfwPollEvents</code> and <code>glfwWaitEvents</code> must only be called from the main thread.
+                Fortunately, OpenGL can be run on a separate thread from the main one.
+            </p>
+            <p>
+                To do this, there is another important piece of information from the <a class="link" href="https://www.glfw.org/docs/latest/group__context.html#ga1c04dc242268f827290fe40aa1c91157">GLFW documentation</a>.
+                "When moving a context between threads, you must make it non-current on the old thread before making it current on the new one."
+                This means that in the main thread, after loading OpenGL in your initialize function while the context is current,
+                <code>glfwMakeContextCurrent(NULL)</code> must be called afterwards to make the context non-current, and then <code>glfwMakeContextCurrent</code> must be called again within the other thread to make the context current there.
+            </p>
+            <h2>event hAndling</h2>
+            <p>
+                Additionally, since events are handled on a separate thread from rendering, unless you plan on doing other stuff in the main loop, you can actually use
+                <code>glfwWaitEvents</code> rather than <code>glfwPollEvents</code>, because rendering will continue regardless of the main thread being paused. On my device, this even increased
+                performance because events are no longer constantly being polled. However, I have not tested this on other platforms so this may differ for you.
+            </p>
+            <p>
+                Lastly, GLFW supports callbacks for its events, like <code>glfwSetFramebufferSizeCallback</code> and <code>glfwSetKeyCallback</code>. However, these callbacks are called on the main thread
+                where events are handled. This means that calling OpenGL commands within these functions will not work, because the OpenGL context is not available within the main thread.
+                The way I overcame this was to make the callbacks set flag variables outside of them, which can then be polled within the render thread's loop.
+            </p>
+            <br>
+            <p>
+                All together, the new code should be structured like so:
+            </p>
+<pre><code class="cpp">void initialize() {
+    // Initialize GLFW, loading library, etc.
+}
+// Example event handling
+bool hasResized = false;
+float width = 960.0, height = 540.0;
+void onResize(GLFWwindow* window, int w, int h) {
+    width = w;
+    height = h;
+    hasResized = true;
+}
+void draw() {
+    glfwMakeContextCurrent(insert_your_context_variable_here);
+
+    // Setup OpenGL stuff
+
+    while(!glfwWindowShouldClose(window)) {
+        if (hasResized) {
+            // Handle resize event here (call glViewport, update projection matrices, etc.)
+        }
+        // Draw OpenGL stuff
+    }
+}
+int main() {
+    init();
+    glfwMakeContextCurrent(NULL);
+    std::thread renderThread(draw);
+
+    while(!glfwWindowShouldClose(window)) {
+        glfwWaitEvents();
+    }
+
+    renderThread.join();
+
+    // Clean up OpenGL & GLFW
+
+    return 0;
+}</code></pre>
+
+        </div>
+        <div class="section" style="background-color: var(--white);">
+            <h1>sources</h1>
+            GLFW window reference — <a class="link" href="https://www.glfw.org/docs/latest/group__window.html">https://www.glfw.org/docs/latest/group__window.html</a><br>
+            GLFW context reference — <a class="link" href="https://www.glfw.org/docs/latest/group__context.html">https://www.glfw.org/docs/latest/group__context.html</a><br>
+            Multithreading GLFW forum discussion — <a class="link" href="https://discourse.glfw.org/t/multithreading-glfw/573">https://discourse.glfw.org/t/multithreading-glfw/573</a>
+        </div>
+        <script>
+            hljs.highlightAll();
+
+            const fade = document.getElementById("fade");
+            const homeBtn = document.getElementById("home");
+            const listBtn = document.getElementById("list");
+            const backToTopBtn = document.getElementById("backToTop");
+
+            function unloadAnimation(e, url) {
+                homeBtn.style.animation = "1s ease 0s 1 normal both running slideOutTop";
+                listBtn.style.animation = "1s ease 0s 1 normal both running slideOutTop";
+                backToTopBtn.style.animation = "1s ease 0s 1 normal both running slideOutBottom";
+
+                fade.style.animation = "1s ease 0s 1 normal both running fadeOut";
+                
+                e.preventDefault();
+                setTimeout(() => window.location.href = url, 1000);
+            }
+            homeBtn.addEventListener("click", e => unloadAnimation(e, "../index.html#articles"));
+            listBtn.addEventListener("click", e => unloadAnimation(e, "../articles.html"));
+            backToTopBtn.addEventListener("click", () => window.scrollTo(0, 0));
+
+            function onScroll() {
+                backToTopBtn.style.transform = window.scrollY > 0 ? "translateY(-100%)" : "";
+            }
+            onScroll();
+            addEventListener("scroll", onScroll);
+        </script>
+    </body>
+</html>

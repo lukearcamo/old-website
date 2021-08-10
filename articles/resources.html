@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Resources - Luke Arcamo</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&family=Major+Mono+Display&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="../main.css" rel="stylesheet">
+        <link href="../articles.css" rel="stylesheet">
+        <link rel="icon" type="image/png" href="../imgs/icon.png">
+    </head>
+    <!-- https://stackoverflow.com/questions/3885018/active-pseudo-class-doesnt-work-in-mobile-safari -->
+    <body ontouchstart="">
+        <div id="fade"></div>
+
+        <a id="home" href="../index.html"><div class="material-icons" style="font-size: 50px;">home</div></a>
+        <a id="list" href="../index.html"><div class="material-icons" style="font-size: 50px;">view_list</div></a>
+        <button id="backToTop"><div class="material-icons" style="font-size: 50px;">arrow_upward</div></button>
+
+        <div class="section" style="background-color: var(--accent); color: var(--white); padding-top: 15vh;">
+            <div id="title">resources</div>
+            <div id="subtitle">By Luke Arcamo — July 8, 2021</div>
+            Here is a list of various online resources about computer graphics and web development, or coding in general. These are very useful for me, so I thought I'd share them.
+            They are ordererd from beginner-friendly to more advanced.
+        </div>
+        <div class="section" style="background-color: var(--white); padding-top: 10vh;">
+            <p>
+                I first learned about 3d graphics from <b>WebGL Fundamentals</b> — <a class="link" href="https://webglfundamentals.org/">https://webglfundamentals.org/</a><br>
+            </p>
+            <p>
+                Similarly, I first learned about Three.js from <b>Three.js Fundamentals</b> — <a class="link" href="https://threejsfundamentals.org/">https://threejsfundamentals.org/</a><br>
+            </p>
+            <p>
+                This tutorial article provides a very simple introduction to shaders using Shadertoy — <a class="link" href="https://gamedevelopment.tutsplus.com/tutorials/a-beginners-guide-to-coding-graphics-shaders--cms-23313">https://gamedevelopment.tutsplus.com/tutorials/a-beginners-guide-to-coding-graphics-shaders--cms-23313</a><br>
+            </p>
+            <p>
+                <b>W3Schools</b> is an excellent website containing tutorials and documentation for multiple languages, and it even has an online code tester — <a class="link" href="https://www.w3schools.com/">https://www.w3schools.com/</a><br>
+            </p>
+            <p>
+                <b>MDN Web Docs</b>, like W3Schools, contains both tutorials and documentation, but it's specifically for web development and it's less beginner friendly than W3Schools (in my opinion) — <a class="link" href="https://developer.mozilla.org/">https://developer.mozilla.org/</a><br>
+            </p>
+            <p>
+                <b>Can I Use</b> is a tool for checking whether certain browsers support various HTML, CSS, and JS features — <a class="link" href="https://caniuse.com/">https://caniuse.com/</a><br>
+            </p>
+            <p>
+                <b>Three.js</b> code and documentation, sometimes even includes links to other resources — <a class="link" href="https://threejs.org/docs/">https://threejs.org/docs/</a><br>
+            </p>
+            <p>
+                Despite its name, <b>Learn OpenGL</b> not only teaches OpenGL, but it also explains many 3D graphics concepts which can be used outside of OpenGL — <a class="link" href="https://learnopengl.com/">https://learnopengl.com/</a><br>
+            </p>
+            <p>
+                <b>Wikipedia</b> and <b>Wikibooks</b> are excellent for exploring a specific topic in great detail. They have both helped me learn a bit of C++ and calculus. — <a class="link" href="https://www.wikipedia.org/">https://www.wikipedia.org/</a>, <a class="link" href="https://www.wikibooks.org/">https://www.wikibooks.org/</a><br>
+            </p>
+            <p>
+                <b>Stack Overflow</b> and <b>Reddit</b> are forums with many categories to explore. There, you can participate in discussions and ask your own questions —
+                <a class="link" href="https://stackoverflow.com/">https://stackoverflow.com/</a>, <a class="link" href="https://www.reddit.com/">https://www.reddit.com/</a><br>
+            </p>
+            <p>
+                <b>CSS-Tricks</b> contains very useful tips for web development — <a class="link" href="https://www.w3schools.com/">https://www.w3schools.com/</a><br>
+            </p>
+            <p>
+                The official <b>OpenGL wiki</b> is very helpful, providing both documentation and tips & tricks — <a class="link" href="https://www.khronos.org/opengl/wiki/Main_Page">https://www.khronos.org/opengl/wiki/Main_Page</a><br>
+            </p>
+            <p>
+                <b>Inigo Quilez</b>'s articles are filled with interesting math and shader tips — <a class="link" href="https://www.iquilezles.org/www/index.htm">https://www.iquilezles.org/www/index.htm</a><br>
+            </p>
+            <p>
+                Exploring <b>Shadertoy</b> can provide artistic inspiration and insight into new concepts and technique. <u><i>WARNING:</i></u> You will need a good computer to run their shaders, which tend to autoplay! — <a class="link" href="https://www.shadertoy.com/">https://www.shadertoy.com/</a><br>
+            </p>
+        </div>
+        <script>
+            const fade = document.getElementById("fade");
+            const homeBtn = document.getElementById("home");
+            const listBtn = document.getElementById("list");
+            const backToTopBtn = document.getElementById("backToTop");
+
+            function unloadAnimation(e, url) {
+                homeBtn.style.animation = "1s ease 0s 1 normal both running slideOutTop";
+                listBtn.style.animation = "1s ease 0s 1 normal both running slideOutTop";
+                backToTopBtn.style.animation = "1s ease 0s 1 normal both running slideOutBottom";
+
+                fade.style.animation = "1s ease 0s 1 normal both running fadeOut";
+                
+                e.preventDefault();
+                setTimeout(() => window.location.href = url, 1000);
+            }
+            homeBtn.addEventListener("click", e => unloadAnimation(e, "../index.html#articles"));
+            listBtn.addEventListener("click", e => unloadAnimation(e, "../articles.html"));
+            backToTopBtn.addEventListener("click", () => window.scrollTo(0, 0));
+
+            function onScroll() {
+                backToTopBtn.style.transform = window.scrollY > 0 ? "translateY(-100%)" : "";
+            }
+            onScroll();
+            addEventListener("scroll", onScroll);
+        </script>
+    </body>
+</html>

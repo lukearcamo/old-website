@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Modified Material Glitch Effect - Luke Arcamo</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <style>
+        body { margin: 0; }
+        #canvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+        #canvas:focus { outline: none; }
+    </style>
+    <body>
+        <canvas id="canvas" tabindex="0" width="1920" height="1080"></canvas>
+        <script type="module">
+            import * as THREE from "https://cdn.skypack.dev/three@0.129.0";
+            import { OrbitControls } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/controls/OrbitControls.js";
+            import { TeapotGeometry } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/geometries/TeapotGeometry.js";
+            import { EffectComposer  } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/postprocessing/EffectComposer.js";
+            import { RenderPass  } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/postprocessing/RenderPass.js";
+            import { UnrealBloomPass  } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/postprocessing/UnrealBloomPass.js";
+
+            // ===== Setup =====
+
+            const canvas = document.getElementById("canvas");
+            const renderer = new THREE.WebGLRenderer({ canvas });
+            window.addEventListener("resize", () => {
+                renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+                camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                camera.updateProjectionMatrix();
+            });
+
+            const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.01, 2000);
+            camera.position.set(0, 1, 5);
+
+            const controls = new OrbitControls(camera, canvas);
+            controls.target.set(0, 0, 0);
+            controls.update();
+
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0D1116);
+            
+            // ===== Create Objects =====
+
+            var light = new THREE.DirectionalLight(0xffffff, 1);
+            light.position.set(1, 3, 2);
+            scene.add(light);
+
+            var time = { value: 0.0 };
+            var teapot = new THREE.Mesh(new TeapotGeometry(1), new THREE.MeshPhysicalMaterial({ color: 0x555555, roughness: 0.65, metalness: 1 }));
+            teapot.material.onBeforeCompile = function(shader) {
+                shader.uniforms.time = time;
+                shader.fragmentShader = "uniform float time;\n" + shader.fragmentShader;
+
+                shader.vertexShader = "varying vec4 screenPos; varying vec3 worldPos;\n" + shader.vertexShader.replace(
+                    "#include <project_vertex>",
+                    `vec4 mvPosition = vec4( transformed, 1.0 );
+                    #ifdef USE_INSTANCING
+                        mvPosition = instanceMatrix * mvPosition;
+                    #endif
+
+                    mvPosition = modelMatrix * mvPosition;
+                    worldPos = mvPosition.xyz;
+                    mvPosition = viewMatrix * mvPosition;
+
+                    gl_Position = projectionMatrix * mvPosition;
+
+                    screenPos = gl_Position;`
+                );
+                shader.fragmentShader = shader.fragmentShader.replace(
+                    "void main() {",
+                    `// From https://www.shadertoy.com/view/4djSRW
+                    vec3 hash32(vec2 p) {
+                        vec3 p3 = fract(vec3(p.xyx) * vec3(.1031, .1030, .0973));
+                        p3 += dot(p3, p3.yxz+33.33);
+                        return fract((p3.xxy+p3.yzz)*p3.zyx);
+                    }
+                    float hash12(vec2 p) {
+                        vec3 p3  = fract(vec3(p.xyx) * .1031);
+                        p3 += dot(p3, p3.yzx + 33.33);
+                        return fract((p3.x + p3.y) * p3.z);
+                    }
+                    float sdPlane(vec3 p, vec3 n, float h) {
+                        return dot(p, n) - h;
+                    }
+                    void main() {`
+                );
+                shader.fragmentShader = "varying vec4 screenPos; varying vec3 worldPos;\n" + shader.fragmentShader.replace(
+                    "gl_FragColor = vec4( outgoingLight, diffuseColor.a );",
+                    `// float plane = abs(sdPlane(worldPos + vec3(0.0, sin(time * 2.0) * 3.0, 0.0), vec3(0.0, 1.0, 0.0), 0.0));
+                    float plane = abs(sdPlane(worldPos + vec3(0.0, sin(time * 2.0) * 2.0, 0.0), vec3(0.0, 1.0, 0.0), 0.0));
+
+                    vec2 ndc = screenPos.xy / screenPos.z;
+                    vec3 glitch = hash32(floor(ndc * 50.0) + time);
+                    vec3 glitch2 = hash32(floor(ndc * 25.0) + time);
+                    float edge = step(hash12(floor(ndc * 10.0)), 0.5);
+                    edge *= step(plane, 0.5);
+
+                    // outgoingLight = vec3(ndc, 0.0);
+                    outgoingLight = mix(outgoingLight, glitch, step(plane, 0.2));
+                    outgoingLight = mix(outgoingLight, glitch2, edge);
+                    
+                    gl_FragColor = vec4( outgoingLight, diffuseColor.a );`
+                );
+                teapot.material.userData.shader = shader;
+            }
+            scene.add(teapot);
+
+            // ===== Render Loop =====
+
+            const composer = new EffectComposer(renderer);
+            composer.addPass(new RenderPass(scene, camera));
+            composer.addPass(new UnrealBloomPass(undefined, 1, 1, 0.5));
+
+            function animate(now) {
+                time.value = now / 1000;
+                // renderer.render(scene, camera);
+                composer.render();
+                requestAnimationFrame(animate);
+            }
+            requestAnimationFrame(animate);
+        </script>
+    </body>
+</html>

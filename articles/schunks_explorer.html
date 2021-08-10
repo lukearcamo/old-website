@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" class="notranslate" translate="no">
+    <head>
+        <title>Three.js ShaderChunks Explorer - Luke Arcamo</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="google" content="notranslate">
+
+        <link rel="stylesheet" href="../highlight/styles/monokai-sublime.min.css">
+        <script src="../highlight/highlight.min.js"></script>
+        <script src="../highlight/languages/glsl.min.js"></script>
+    </head>
+    <style>
+        body, pre { margin: 0; }
+        body { background-color: #23241f; }
+        code.hljs:not(.code2) {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .code1 { cursor: pointer; }
+        .code2 { background-color: #11120f; }
+        button {
+            border: none;
+            background-color: #11120f;
+            color: white;
+            padding: 0.5em;
+            margin: 0.5em;
+        }
+        button:hover { background-color: #45473d; }
+    </style>
+    <body>
+        <button id="expand_all">Expand All</button>
+        <button id="contract_all">Contract All</button>
+        <script type="module">
+            import { ShaderChunk, ShaderLib } from "https://cdn.skypack.dev/three@0.129.0";
+
+            function appendCode(text) {
+                const pre = document.createElement("pre");
+                const code = document.createElement("code");
+                code.className = "glsl";
+                code.textContent = text;
+                pre.appendChild(code);
+                document.body.appendChild(pre);
+                return code;
+            }
+            function appendExpandable(text1, text2) {
+                var div = document.createElement("div");
+
+                const pre1 = document.createElement("pre");
+                const code1 = document.createElement("code");
+                code1.className = "glsl code1";
+                code1.textContent = text1;
+                pre1.appendChild(code1);
+                div.appendChild(pre1);
+
+                const pre2 = document.createElement("pre");
+                const code2 = document.createElement("code");
+                code2.className = "glsl code2";
+                code2.textContent = text2;
+                pre2.appendChild(code2);
+                div.appendChild(pre2);
+
+                code2.style.display = "none";
+                code1.addEventListener("click", e => {
+                    code2.style.display = code2.style.display == "none" ? "block" : "none";
+                });
+
+                document.body.appendChild(div);
+            }
+
+            function replaceChunks(shader) {
+                var lines = shader.split("\n");
+                var ret = "";
+                for (const line of lines) {
+                    if (line.includes("#include")) {
+                        if (ret != "") {
+                            appendCode(ret);
+                            ret = "";
+                        }
+                        appendExpandable(line, ShaderChunk[line.trim().slice(10, -1)]);
+                    }
+                    else {
+                        ret += line + "\n";
+                    }
+                }
+                if (ret != "") appendCode(ret);
+                return shader;
+            }
+
+            var search = location.search.slice(1).split("_");
+            replaceChunks(ShaderLib[search[0]][search[1] == "vs" ? "vertexShader" : "fragmentShader"]);
+
+            document.getElementById("expand_all").addEventListener("click", e => document.querySelectorAll(".code2").forEach(e => e.style.display = "block"));
+            document.getElementById("contract_all").addEventListener("click", e => document.querySelectorAll(".code2").forEach(e => e.style.display = "none"));
+
+            hljs.highlightAll();
+        </script>
+    </body>
+</html>
