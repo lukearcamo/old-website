@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Making sense of Three.js shaders - Luke Arcamo</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&family=Major+Mono+Display&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="../main.css" rel="stylesheet">
+        <link href="../articles.css" rel="stylesheet">
+        <link rel="icon" type="image/png" href="../imgs/icon.png">
+
+        <link rel="stylesheet" href="../highlight/styles/monokai-sublime.min.css">
+        <script src="../highlight/highlight.min.js"></script>
+        <script src="../highlight/languages/javascript.min.js"></script>
+    </head>
+    <!-- https://stackoverflow.com/questions/3885018/active-pseudo-class-doesnt-work-in-mobile-safari -->
+    <body ontouchstart="">
+        <div id="fade"></div>
+
+        <a id="home" href="../index.html"><div class="material-icons" style="font-size: 50px;">home</div></a>
+        <a id="list" href="../index.html"><div class="material-icons" style="font-size: 50px;">view_list</div></a>
+        <button id="backToTop"><div class="material-icons" style="font-size: 50px;">arrow_upward</div></button>
+
+        <div class="section" style="background-color: var(--accent); color: var(--white); padding-top: 15vh;">
+            <div id="title">MAking sense of three.js shAders</div>
+            <div id="subtitle">By Luke Arcamo — July 8, 2021</div>
+            Three.js comes with several materials built-in, but customizing these materials can be difficult because there isn't really a "clean" way to do it.
+            There is the option of writing a custom shader, but then you don't have access to all of the lighting, fog, skinning, etc. that the default shaders come with (unless you write them in yourself).
+            The more hacky method is to use the default materials' <code>onBeforeCompile</code> callback to inject your own code into the shader source.
+            For both of these methods, it is important to understand Three.js shaders in order to be able to modify them. Unfortunately, shaders lack sufficient information on the Three.js website
+            so after exploring the Three.js code, here is a guide to the shaders. Note that this is not a full detailed documentation, only a guide. Also note that this article assumes that you have
+            foundational knowledge on shaders. If not, then check out the <a class="link" href="resources.html">resources</a> page to learn more about shaders.
+        </div>
+        <div class="section" style="background-color: var(--white); padding-top: 10vh;">
+            <h1>code structure</h1>
+            <p>
+                In Three.js repo, material shaders are located under <code>src/renderers/shaders</code>. Since materials may share different parts of a shader, Three.js divides the shaders into shader chunks.
+                These shaders consist of several <code>#include</code> directives, which are eventually replaced by the actual shader chunk code before they are compiled.
+            </p>
+            <p>
+                These chunks are entirely or parially enabled/disabled using preprocessor directives, which depend on various settings in the form of defines.
+                <!-- https://threejs.org/docs/#api/en/renderers/webgl/WebGLProgram -->
+                This long list of defines are prepended to the shaders in <a class="link" href="https://github.com/mrdoob/three.js/blob/dev/src/renderers/webgl/WebGLProgram.js#L431">WebGLProgram.js</a>,
+                which are in turn based on the long list of material parameters in the confusingly named <a class="link" href="https://github.com/mrdoob/three.js/blob/dev/src/renderers/webgl/WebGLPrograms.js#L154">WebGLPrograms.js</a>.
+                Note that these functions/objects are in the back-end, so they are not exported and are only accessible if you delve into the code. 
+                The most documentation that I've found on the Three.js website about Three.js shaders is the one for <a class="link" href="https://threejs.org/docs/#api/en/renderers/webgl/WebGLProgram">WebGLProgram</a>.
+            <p>
+            </p>
+                Additionally, some shader functions are defined only in these obscure locations as well.
+                For example, the <code>encodings_pars_fragment</code> is imported into every fragment shader but it is not found in the fragment shader code. It is prepended by <code>WebGLProgram</code>.
+                The only way to see this chunk is to either delve into the GitHub code or manually create errors using the material's <code>onBeforeCompile</code> callback.
+                Another example is the function <code>mapTexelToLinear</code>, which is an alias for one of the several encoding functions. Which one it corresponds to
+                is determined in WebGLProgram as well, hardcoded as a GLSL define via JS.
+            </p>
+            <a class="link" href="https://github.com/mrdoob/three.js/tree/dev/src/renderers/shaders/ShaderChunk">shaders/ShaderChunk/</a><br>
+            <a class="link" href="https://github.com/mrdoob/three.js/tree/dev/src/renderers/shaders/ShaderChunk.js">shaders/ShaderChunk.js</a>
+            <p>
+                <code>shaders/ShaderChunk/</code> contains individual JS files which export GLSL code wrapped in a JS string variable.
+                This makes it easy for <code>shaders/ShaderChunk.js</code> to simply import these GLSL code strings and map them to a corresponding name in the <code>THREE.ShaderChunk</code> object.
+                Additionally, <code>THREE.ShaderChunk</code> also contains the complete shader code strings from <code>shaders/ShaderLib/</code>.
+            </p>
+            <a class="link" href="https://github.com/mrdoob/three.js/tree/dev/src/renderers/shaders/ShaderLib">shaders/ShaderLib/</a>
+            <p>
+                <code>shaders/ShaderLib/</code> contains the vertex and fragment shader GLSL code for each material, which are also stored in JS strings.
+            </p>
+            <a class="link" href="https://github.com/mrdoob/three.js/tree/dev/src/renderers/shaders/ShaderLib.js">shaders/ShaderLib.js</a>
+            <a class="link" href="https://github.com/mrdoob/three.js/tree/dev/src/renderers/shaders/UniformsLib.js">shaders/UniformsLib.js</a>
+            <a class="link" href="https://github.com/mrdoob/three.js/tree/dev/src/renderers/shaders/Uniformsutils.js">shaders/UniformsUtils.js</a>
+            <p>
+                Since not all shader chunks use all uniforms, uniforms are also broken into chunks, found in the the <code>THREE.UniformsLib</code> object.
+                <code>THREE.Shaderlib</code> uses <code>THREE.UniformsUtils</code> for deep copying objects in order to combine the shader code into one object, along with only the necessary uniforms for each material.
+            </p>
+        </div>
+        <div class="section" style="background-color: var(--white);">
+            <h1>chunks</h1>
+            <h2>coMMon & pAcking</h2>
+            <p>
+                Common and packing are two shader chunks found near the top of most shaders, after the material-specific uniforms and varyings. Packing is only found in fragment shaders.
+            </p>
+            <p>
+                Common contains mathematical constants, like pi and epsilon. It also contains arithmetic, geometric, and matrix functions which are not built into GLSL,
+                as well as three structs: IncidentLight, ReflectedLight, and GeometricContext.
+                Packing contains functions and constants for encoding and decoding values to fit into other compact formats.
+                Packing also contains functions for converting between z coordinates, orthographic depth, and perspective depth.
+            </p>
+            <p>
+                The three structs from common are quite significant.
+            </p>
+            <h2>pArs</h2>
+            <p>
+                After common and packing, there are several more chunks located before the <code>main()</code> function, with the majority of them containing the word "pars".
+                "pars" is short for "parameters". These chunks contain uniform declarations, varying declarations, and functions.
+            </p>
+            For vertex shaders, this section can be roughly divided into these main categories:
+            <ul>
+                <li>Varyings (color [vertex colors], uv, and uv2 [the second UV channel is only used for lightmaps and aomaps])</li>
+                <li>Maps (displacementmap, envmapmap, etc.)</li>
+                <li>Deformation (morphtarget, skinning)</li>
+                <li>Other (shadowmap, fog, logdepthbuf, clipping_planes, etc.)</li>
+            </ul>
+            And for fragment shaders, this section is roughly structured like so:
+            <ul>
+                <li>Varyings (color [vertex colors], uv, and uv2 [the second UV channel is only used for lightmaps and aomaps])</li>
+                <li>Maps (map, lightmap, normalmap, metalnessmap, etc.)</li>
+                <li>Lighting (brdf & shadow functions and structs, etc.)</li>
+                <li>Other (dithering, fog, logdepthbuf, clipping_planes, etc.)</li>
+            </ul>
+            <h2>MAin</h2>
+            <p>
+                As with all shaders, the <code>void main()</code> function is where the real bulk of the calculations happen. After getting to know the uniforms, varyings, and functions, it is important
+                to understand the main function in order to figure out where you should insert your code.
+            </p>
+            <p>
+                In vertex shaders, the chunks take all of the attributes and calculate the varyings. The main function begins with simple uv calculations, followed by vertex colors.
+                They are followed by the normals and tangents which are then altered by morphing and skinning-related chunks, and then their appropriate transformation matrices.
+                However, if flat shading is enabled, the real normal is actually calculated within the fragment shader using the <code>OES_standard_derivatives</code> functions.
+                Afterwards, the vertices are modified like the normals, and are followed by some other calculations for varyings.
+            </p>
+            <p>
+                In fragment shaders, the beginning of the main function usually contains a <code>vec4 diffuseColor</code>, a <code>ReflectedLight reflectedLight</code>,
+                and the chunks related to discarding fragments (clipping planes, alphatest).
+                Later on, an <code>IncidentLight directLight</code> is created and is shared between all light sources, with only its data being modified for each iteration through the light sources.
+            </p>
+            <p>
+                Most of the chunks in <code>main()</code> use <code>diffuseColor</code>, <code>reflectedLight</code>, and <code>directLight</code>, to either modify them
+                or use them to calculate the final color used for gl_FragColor, <code>outgoingLight</code>.
+            </p>
+            <p>
+                The last chunks are the final modifications of the output color; they are meant to go after all of the color, lighting, and shadow calculations.
+                This section includes tonemapping, encoding the output, applying fog color, premultiplying alpha, and dithering.
+            </p>
+        </div>
+        <div class="section" style="background-color: var(--white);">
+            <h1>exAMples & deMos</h1>
+            <p>
+                I believe that examples are an excellent way to learn new things. Here are some simple common situations in which you may want to edit Three.js shaders, along with a
+                more complex and specific example at the end of this section.
+            </p>
+            <h2>Vertex deforMAtion</h2>
+            <p>
+                This is very similar to the example for modified materials already on the <a class="link" href="https://threejs.org/examples/#webgl_materials_modified">Three.js website</a>.
+                Hopefully, with newfound insight, you may understand it better.
+            </p>
+            <p>
+                Flat shading is enabled so that normals are calculated per fragment rather than using the normal attribute.
+                This does not work for lambert materials since it calculates lighting in the vertex shader.
+                Technically, you could manually recalculate normals if you had tangents and bitangents.
+                See <a class="link" href="https://www.ronja-tutorials.com/post/015-wobble-displacement/">this article</a> for how to do this.
+            </p>
+<pre><code class="javascript">var cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1, 1, 30, 1), new THREE.MeshPhongMaterial({ color: 0x841A00 }));
+scene.add(cube);
+
+cube.material.onBeforeCompile = function(shader) {
+    shader.uniforms.time = { value: 0.0 };
+    
+    shader.flatShading = true;
+    shader.vertexShader = "uniform float time;\n" + shader.vertexShader.replace(
+        "#include &lt;begin_vertex&gt;",
+        `vec3 transformed = vec3(position);
+        transformed.xz *= sin(transformed.y * PI * 3.0 + time) * 0.25 + 0.75;`
+    );
+    cube.material.userData.shader = shader;
+};
+
+// In the render loop
+if (cube.material.userData.shader) cube.material.userData.shader.uniforms.time.value = time;</code></pre>
+            <div class="demo" id="demo1">
+                <button class="overlay"></button>
+                <canvas></canvas>
+            </div>
+            <!-- <h2>eXtrA MAps</h2>
+            <div class="demo" id="demo2">
+                <button class="overlay"></button>
+                <canvas></canvas>
+            </div> -->
+            <h2>color AdjustMent</h2>
+            <p>
+                This demo shows how near the very end of a shader, you can apply your own postprocessing to the outputted color.
+                In this case, the color components are swizzled from rgb to brg, and then the contrast is increased.
+                I placed my code before the tonemapping and encoding fragments, so that they would still apply after my changes.
+                But the beauty of this system is you can include them before or after your changes, or you can even or override them if you wanted to.
+            </p>
+<pre><code class="javascript">var cube = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshLambertMaterial({ color: 0xffffff }));
+new THREE.TextureLoader().load("../imgs/articles/testtex_512.png", tex => {
+    cube.material.map = tex; cube.material.needsUpdate = true;
+});
+scene.add(cube);
+
+cube.material.onBeforeCompile = function(shader) {
+    shader.fragmentShader = shader.fragmentShader.replace(
+        "#include &lt;tonemapping_fragment&lt;",
+        `gl_FragColor.rgb = gl_FragColor.brg;
+        gl_FragColor.rgb = 4.0 * gl_FragColor.rgb - 1.5;
+        #include &lt;tonemapping_fragment&lt;`
+    );
+    cube.material.userData.shader = shader;
+};</code></pre>
+            <div class="demo" id="demo3">
+                <button class="overlay"></button>
+                <canvas></canvas>
+            </div>
+            <h2>glitch effect</h2>
+            <p>
+                <a class="link" href="modified_material_glitch.html">Here is a glitch effect I made</a>. I originally made it with a shader material,
+                but injecting the code into a default material has allowed me to use it with Three.js's physically-based rendering.
+                To view its code, simply use your browser's developer tools.
+                <b>Warning:</b> Since this uses PBR, this may be quite performance intensive for some devices.
+            </p>
+        </div>
+        <div class="section" style="background-color: var(--white);">
+            <h1>tool</h1>
+            While exploring Three.js shaders, I got tired of going on GitHub and opening the numerous tiny ShaderChunk files. I also got tired of using <code>console.log</code> to messily print out shaders.
+            I also wanted to see the shaders in their complete form. So, I created a tool to help explore Three.js shaders more easily. It features:
+            <ul>
+                <li>Syntax highlighting via highlight.js</li>
+                <li>Individually expandable shader chunks, with buttons to expand/contract all</li>
+                <li>You can also use <kbd>Ctrl</kbd> + <kbd>F</kbd></li>
+                <li>To view different shaders from <code>THREE.ShaderLib</code>, replace the URL query string with the format <code>&lt;name&gt;_&lt;vs|fs&gt;</code>, e.g. <code>phong_fs</code>.</li>
+            </ul>
+            However, I still highly suggest going into the GitHub code if you don't understand a certain bit since, as I've mentioned before, there are many obscure back-end defines, and comments that aren't present in the final Three.js builds.
+            Anyways, <a class="link" href="schunks_explorer.html?lambert_vs">here is the tool.</a>
+        </div>
+        <div class="section" style="background-color: var(--white);">
+            <h1>sources</h1>
+            Three.js GitHub code — <a class="link" href="https://github.com/mrdoob/three.js/tree/dev/src/renderers/shaders">https://github.com/mrdoob/three.js/tree/dev/src/renderers/shaders</a><br>
+            Three.js forums, specifically these posts — <a class="link" href="https://discourse.threejs.org/t/what-are-pars-chunks-when-making-materials-what-does-pars-stand-for/15468">https://discourse.threejs.org/t/what-are-pars-chunks-when-making-materials-what-does-pars-stand-for/15468</a>
+            and <a class="link" href="https://discourse.threejs.org/t/why-do-ao-and-lightmap-need-a-second-set-of-uvs/4178">https://discourse.threejs.org/t/why-do-ao-and-lightmap-need-a-second-set-of-uvs/4178</a><br>
+        </div>
+        <script type="module">
+            hljs.highlightAll();
+
+            const fade = document.getElementById("fade");
+            const homeBtn = document.getElementById("home");
+            const listBtn = document.getElementById("list");
+            const backToTopBtn = document.getElementById("backToTop");
+
+            function unloadAnimation(e, url) {
+                homeBtn.style.animation = "1s ease 0s 1 normal both running slideOutTop";
+                listBtn.style.animation = "1s ease 0s 1 normal both running slideOutTop";
+                backToTopBtn.style.animation = "1s ease 0s 1 normal both running slideOutBottom";
+
+                fade.style.animation = "1s ease 0s 1 normal both running fadeOut";
+                
+                e.preventDefault();
+                setTimeout(() => window.location.href = url, 1000);
+            }
+            homeBtn.addEventListener("click", e => unloadAnimation(e, "../index.html#articles"));
+            listBtn.addEventListener("click", e => unloadAnimation(e, "../articles.html"));
+            backToTopBtn.addEventListener("click", () => window.scrollTo(0, 0));
+
+            function onScroll() {
+                backToTopBtn.style.transform = window.scrollY > 0 ? "translateY(-100%)" : "";
+            }
+            onScroll();
+            addEventListener("scroll", onScroll);
+        </script>
+        <script src="shader_guide.js" type="module"></script>
+    </body>
+</html>

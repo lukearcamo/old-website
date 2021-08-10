@@ -32,8 +32,9 @@ h1, h2, h3, h4, h5, h6 {
     background-color: transparent;
     padding: 0;
     border: none;
+    user-select: none;
 
-    transition: transform 0.25s;
+    /* transition: transform 0.25s; */
     animation: 1s ease 0s 1 normal both running slideInTop;
 }
 #backToTop {
@@ -48,13 +49,14 @@ h1, h2, h3, h4, h5, h6 {
     background-color: transparent;
     padding: 0;
     border: none;
+    user-select: none;
     
     transition: transform 0.5s;
 
     mix-blend-mode: exclusion;
     color: white;
 }
-#home > div, #backToTop > div {
+#home > div, #backToTop > div, #list > div {
     transition: transform 0.25s;
     cursor: pointer;
     width: 100%;
@@ -62,7 +64,7 @@ h1, h2, h3, h4, h5, h6 {
     line-height: 75px !important; /* Vertically center one line of text */
     text-align: center;
 }
-#home > div:active, #backToTop > div:active { transform: scale(1.5, 1.5); }
+#home > div:active, #backToTop > div:active, #list > div:active { transform: scale(1.5, 1.5); }
 .link {
     color: var(--linkColor);
     font-weight: bold;
@@ -73,20 +75,20 @@ h1, h2, h3, h4, h5, h6 {
 
     background: linear-gradient(var(--linkColor) 0%, var(--linkColor) 100%);
     /* border-bottom: 4px dotted var(--linkColor); */
-    /* background-position: 0 calc(100% + 4px); */
-    background-position: 0 100%;
+    background-position: 0 calc(100% - 4px);
+    /* background-position: 0 100%; */
 
     background-repeat: no-repeat;
-    background-size: 0 4px;
+    background-size: 0 2px;
 
     transition: background-size 0.25s;
 }
-.link:active { background-size: 100% 4px; }
+.link:active { background-size: 100% 2px; }
 .link:visited {
     color: var(--visitedLinkColor);
     background: linear-gradient(var(--visitedLinkColor) 0%, var(--visitedLinkColor) 100%);
 }
 @media (hover: hover) {
-    #home > div:hover, #backToTop > div:hover { transform: scale(1.5, 1.5); }
-    .link:hover { background-size: 100% 4px; }
+    #home > div:hover, #backToTop > div:hover, #list > div:hover { transform: scale(1.5, 1.5); }
+    .link:hover { background-size: 100% 2px; }
 }

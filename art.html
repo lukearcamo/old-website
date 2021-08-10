@@ -26,7 +26,7 @@
             <div id="title" class="enter">
                 <div id="doorTop"></div>
                 <div id="doorBottom"></div>
-                the gAllery of Visions
+                gAllery of Visions
                 <div id="subtitle">the Artwork of luke ArcAMo</div>
             </div>
             <div id="copyright">© Copyright 2021 Luke Arcamo. You may not use my art without my permission.</div>
@@ -119,6 +119,12 @@
                 setTimeout(() => window.location.href = "index.html#art", 1000);
             });
             backToTopBtn.addEventListener("click", () => window.scrollTo(0, 0));
+
+            // function inViewport(element) {
+            //     const rect = element.getBoundingClientRect();
+            //     const maxHeight = window.innerHeight || document.documentElement.clientHeight;
+            //     return (rect.top >= 0 && rect.top < maxHeight) || (rect.bottom > 0 && rect.bottom <= maxHeight) || (rect.top < 0 && rect.bottom > maxHeight);
+            // }
 
             function onScroll() {
                 backToTopBtn.style.transform = window.scrollY > 0 ? "translateY(-100%)" : "";

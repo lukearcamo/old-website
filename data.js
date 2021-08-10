@@ -246,4 +246,37 @@ const code = {
     }
 };
 
-export { artworks, code };
+const articles = {
+    "graphics": [
+        {
+            link: "articles/glfw_freezing.html",
+            title: "GLFW: Prevent freezing on window update",
+            date: "July 22, 2021",
+            description: "On certain platforms, various window operations will cause event processing to block. Here is a way to structure the code in order to prevent it from blocking rendering as well."
+        },
+        {
+            link: "articles/shader_guide.html",
+            title: "Making sense of Three.js shaders",
+            date: "July 30, 2021",
+            description: "Customizing Three.js's built-in materials can be difficult because there isn't really a \"clean\" way to do it. In order to modify them, you must inject your own code. Since the Three.js website lacks documentation on its shaders, here is a guide to understanding the shaders and how to modify them. Note that this article assumes that you have foundational knowledge on shaders. Otherwise, check out the resources article to learn more about shaders."
+        },
+    ],
+    "webDev": [
+        {
+            link: "articles/css_tips.html",
+            title: "Simple CSS Tips",
+            date: "August 6, 2020",
+            description: "A collection of CSS code snippets and examples which may be useful in specific circumstances."
+        },
+    ],
+    "other": [
+        {
+            link: "articles/resources.html",
+            title: "Resources",
+            date: "July 27, 2021",
+            description: "A list of helpful online resources which I've found about computer graphics, web development, or coding in general."
+        },
+    ]
+};
+
+export { artworks, code, articles };

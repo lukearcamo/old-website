@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Articles - Luke Arcamo</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&family=Major+Mono+Display&display=swap" rel="stylesheet">        
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="main.css" rel="stylesheet">
+        <link href="galleries.css" rel="stylesheet">
+        <link rel="icon" type="image/png" href="imgs/icon.png">
+    </head>
+    <style>
+        :root, body { background: var(--accent); }
+        #home, #cover { color: var(--white); }
+        #home { animation-delay: 0.5s; }
+        #doorTop { background-color: var(--accent); border-color: var(--white); }
+        #doorBottom { background-color: var(--accent); border-color: var(--white); }
+        #subtitle { color: var(--black); }
+
+        @keyframes fadeOut { to { opacity: 1; } }
+        #fade {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--accent);
+            z-index: 10;
+            pointer-events: none;
+            opacity: 0;
+        }
+        .section {
+            width: 100%;
+            font: 16px Montserrat;
+
+            /* padding: 0 10% 3% 10%; */
+            padding: 3% 10% 0% 10%;
+            box-sizing: border-box;
+            text-align: left;
+
+            /* background-color: var(--light);
+            color: var(--white); */
+        }
+        .series {
+            padding-bottom: 50px;
+        }
+        h2 {
+            display: inline;
+        }
+        /* TMP CLASS */
+        #sortOptions {
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            font: bold min(22px, 2vmax) Montserrat;
+
+            animation: 1s ease 0s 1 normal both running slideInBottom;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            /* border: 1px solid blue; */
+        }
+        #sortOptions > div {
+            padding: 0 20px;
+        }
+        label[for="sort"] {
+            background-color: var(--black);
+            width: 70px;
+            height: 30px;
+            position: relative;
+            border: 5px solid var(--black);
+            box-sizing: border-box;
+        }
+        label[for="sort"]:hover {
+            background-color: var(--light);
+            border: 5px solid var(--light);
+        }
+        label[for="sort"]::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background-color: var(--white);
+            transition: transform ease-in-out 0.3s;
+        }
+        #sort:checked ~ label[for="sort"]:before {
+            transform: translateX(100%);
+        }
+    </style>
+    <!-- https://stackoverflow.com/questions/3885018/active-pseudo-class-doesnt-work-in-mobile-safari -->
+    <body ontouchstart="">
+        <div id="fade"></div>
+
+        <a id="home" href="index.html"><div class="material-icons" style="font-size: 50px;">home</div></a>
+        <button id="backToTop"><div class="material-icons" style="font-size: 50px;">arrow_upward</div></button>
+
+        <div id="cover">
+            <div id="title" class="enter">
+                <div id="doorTop"></div>
+                <div id="doorBottom"></div>
+                gAllery of ideAs
+                <div id="subtitle">Articles Written by luke ArcAMo</div>
+            </div>
+            <div id="sortOptions">
+                <div style="text-align: right;">Sort by categories</div>
+                <input type="checkbox" id="sort" style="display: none;">
+                <label for="sort"></label>
+                <div style="text-align: left;">Sort by newest first</div>
+            </div>
+        </div>
+
+        <template id="sectionTemplate">
+            <div class="section">
+                <h2><a class="link" href="#">Title</a>&nbsp;&nbsp;—&nbsp;&nbsp;</h2>
+                <span>Date</span>
+                <p>Description/Preview</p>
+            </div>
+        </template>
+        
+        <div class="series" id="newest" style="background-color: var(--black); color: var(--white); display: none;"></div>
+        <div class="series" id="graphics" style="background-color: var(--light); color: var(--white);">
+            grAphics
+            <div class="seriesDescription">
+                WebGL, OpenGL, shaders, raymarching...
+            </div>
+        </div>
+        <div class="series" id="webDev" style="background-color: var(--dark); color: var(--white);">
+            Web deV
+            <div class="seriesDescription">
+                Coding for the web using HTML, CSS, and JS
+            </div>
+        </div>
+        <div class="series" id="other" style="background-color: var(--white); color: var(--black);">
+            other
+        </div>
+
+        <script type="module">
+            import { articles } from "./data.js";
+
+            const template = document.getElementById("sectionTemplate");
+            const sort = document.getElementById("sort");
+
+            const graphics = document.getElementById("graphics");
+            const webDev = document.getElementById("webDev");
+            const newest = document.getElementById("newest");
+            const other = document.getElementById("other");
+
+            for (const category in articles) {
+                const series = document.getElementById(category);
+                for (const entry of articles[category]) {
+                    var clone = template.content.cloneNode(true);
+                    var section = clone.children[0];
+
+                    section.children[0].children[0].href = entry.link;
+                    section.children[0].children[0].textContent = entry.title;
+                    section.children[1].textContent = entry.date;
+                    section.children[2].innerHTML = entry.description;
+                    section.setAttribute("data-category", category);
+                    section.setAttribute("data-date", Date.parse(entry.date));
+
+                    series.appendChild(clone);
+                }
+            }
+            
+            sort.addEventListener("change", () => {
+                const sections = document.querySelectorAll(".section"); // Ensure static list
+                if (sort.checked) {
+                    graphics.style.display = webDev.style.display = other.style.display = "none";
+                    newest.style.display = "block";
+                    for (const section of sections) {
+                        if (newest.children.length == 0) {
+                            newest.appendChild(section);
+                        }
+                        else {
+                            for (var i = 0; i < newest.children.length; i++) {
+                                const child = newest.children[i];
+                                if (parseInt(child.dataset.date) < parseInt(section.dataset.date)) {
+                                    child.before(section);
+                                    break;
+                                }
+                                else if (i == newest.children.length - 1) {
+                                    child.after(section);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+                    graphics.style.display = webDev.style.display = other.style.display = "block";
+                    newest.style.display = "none";
+                    for (const section of sections) {
+                        document.getElementById(section.dataset.category).appendChild(section);
+                    }
+                }
+            });
+
+            const title = document.getElementById("title");
+            const fade = document.getElementById("fade");
+            const homeBtn = document.getElementById("home");
+            const backToTopBtn = document.getElementById("backToTop");
+            
+            homeBtn.addEventListener("click", e => {
+                homeBtn.style.animation = "1s ease 0s 1 normal both running slideOutTop";
+                backToTopBtn.style.animation = "1s ease 0s 1 normal both running slideOutBottom";
+
+                title.classList.remove("enter");
+                setTimeout(() => title.classList.add("exit"), 10);
+
+                e.preventDefault();
+                setTimeout(() => window.location.href = "index.html#articles", 1000);
+            });
+            backToTopBtn.addEventListener("click", () => window.scrollTo(0, 0));
+
+            const links = document.querySelectorAll(".link");
+            for (const link of links) {
+                link.addEventListener("click", e => {
+                    homeBtn.style.animation = "1s ease 0s 1 normal both running slideOutTop";
+                    backToTopBtn.style.animation = "1s ease 0s 1 normal both running slideOutBottom";
+
+                    fade.style.animation = "1s ease 0s 1 normal both running fadeOut";
+
+                    e.preventDefault();
+                    setTimeout(() => window.location.href = link.href, 1000);
+                });
+            }
+            
+            // Force reset fade when using browser history navigation buttons
+            window.addEventListener("pageshow", e => { if (e.persisted) fade.style.animation = ""; });
+
+            function onScroll() {
+                backToTopBtn.style.transform = window.scrollY > 0 ? "translateY(-100%)" : "";
+            }
+            onScroll();
+            addEventListener("scroll", onScroll);
+        </script>
+    </body>
+</html>
+<!-- 
+
+- Page animations -- DONE
+- Demo -- add a "click to play" functionality so they dont all automatically run on weak systems - -DONE
+
+TODO:
+- Clean up website folder
+- After clean up, Hyperlinking -- Make sure they all have the proper links -- before uploading to GH, make sure the article links are root relative (or not, i guess you could keep the ../)
+- Add a tiny footer like on IQ's website? -- Maybe not, not really necessary
+- Disc light -- Project lambert closest points onto the plane
+- CHANGE THE ARTICLE DATES TO MATCH THE CAS PJ SCHEDULE!!!
+- Upload to GH (include the updated main.css, data.js, and index.html)
+- Convert ALL webpages to semantic html
+- To get google to index your website:
+--- Add a README with a link to the site https://support.google.com/webmasters/thread/86833320/google-does-not-index-google-sites-page-and-github-page?hl=en&msgid=86976886
+--- Manually request google to index your site
+--- Add a sitemap? Apparently this likely wont help for small sites, plus you need to update it constantly to include newly added pages
+--- add robot.txt
+--- Add meta tags
+
+For the shape lights article, say that I have no idea if these are physically or mathematically correct, but then again if we're using the phong or blinn-phong reflection model i dont think realism is a concern.
+ -->

@@ -1,0 +1,118 @@
+body { background-color: var(--light); }
+#home, #backToTop { color: var(--white); }
+#list {
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    right: 0;
+
+    height: 75px;
+    width: 75px;
+
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    user-select: none;
+
+    transition: transform 0.25s;
+    animation: 1s ease 0s 1 normal both running slideInTop;
+
+    color: var(--white);
+}
+@keyframes fadeIn { to { opacity: 0; } }
+@keyframes fadeOut { from { opacity: 0; } }
+#fade {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--accent);
+    z-index: 10;
+    pointer-events: none;
+    animation: 1s ease 0s 1 normal both running fadeIn;
+}
+#title {
+    font: max(5vmax, 40px) "Major Mono Display";
+    /* font: 4.5vmax "Major Mono Display"; */
+    /* font: 25px "Major Mono Display"; */
+    text-align: center;
+    margin-bottom: 20px;
+}
+#subtitle {
+    text-align: center;
+    margin: 2em 0;
+}
+.section {
+    color: var(--dark);
+    font: max(2vmin, 16px) Montserrat;
+    padding: 0vh 10% 10vh 10%;
+    overflow: auto;
+    /* break-before: page; */
+}
+/* @media print { .section { font-size: 12px; } #home, #backToTop, #list, .demo { display: none; } } */
+h1 {
+    /* font: 6vmin "Major Mono Display"; */
+    /* font: max(6vmin, 30px) "Major Mono Display"; */
+    font: 2.5em "Major Mono Display";
+    margin-bottom: 20px;
+}
+h2 { font-family: "Major Mono Display"; }
+.hljs { background: var(--black); }
+img {
+    display: block;
+    margin: 0 auto 1em auto;
+    max-width: 100%;
+    max-height: 50vh;
+    flex-basis: 0;
+}
+.imagesContainer {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: stretch;
+    justify-content: center;
+}
+.image {
+    margin: 1%;
+    width: 30%;
+    min-width: 40vh;
+    text-align: center;
+    flex-grow: 1;
+}
+/* .math {
+    font-family: "Times New Roman";
+} */
+.demo {
+    width: 100%;
+    /* max-width: 640px; */
+    max-width: 800px;
+    aspect-ratio: 16 / 9;
+
+    position: relative;
+    /* margin: 2em 0; */
+    margin: 2em auto;
+}
+canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    font: 3vh "Major Mono Display";
+    color: var(--white);
+    border: none;
+    outline: none;
+
+    user-select: none;
+}
+.overlay:focus ~ canvas {
+    outline: var(--linkColor) solid 3px;
+}
+.overlay::before { content: "click to plAy/pAuse"; }
+@media (pointer: coarse) {
+    .overlay::before { content: "tAp to plAy/pAuse"; }
+}

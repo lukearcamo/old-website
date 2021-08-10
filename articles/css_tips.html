@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Simple CSS Tips - Luke Arcamo</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&family=Major+Mono+Display&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="../main.css" rel="stylesheet">
+        <link href="../articles.css" rel="stylesheet">
+        <link rel="icon" type="image/png" href="../imgs/icon.png">
+
+        <link rel="stylesheet" href="../highlight/styles/monokai-sublime.min.css">
+        <script src="../highlight/highlight.min.js"></script>
+        <script src="../highlight/languages/css.min.js"></script>
+    </head>
+    <style>
+        .aspect-16-9 {
+            background-color: var(--accent);
+            color: var(--white);
+            padding: 2%;
+            /* margin: 2%; */
+
+            width: 16vw;
+            height: 9vw;
+
+            min-width: 160px;
+            min-height: 90px;
+        }
+        .aspect-1-2 {
+            background-color: var(--accent);
+            color: var(--white);
+            padding: 2%;
+            /* margin: 2%; */
+            margin-top: 2%;
+
+            width: 8vw;
+            height: 16vw;
+
+            min-width: 160px;
+            min-height: 320px;
+        }
+        .math {            
+            /* Ignore this flexbox; Just for vertically centering the text outside of the fraction
+            If you comment this out the grid will still function */
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+        }
+        .frac {
+            display: inline-grid;
+            grid-template-rows: 1fr 1fr; /* Force equal height for rows */
+        }
+        .num, .den {
+            border: 1px dashed magenta;
+            box-sizing: border-box;
+
+            grid-column: 1 / 2;
+
+            /* Ignore this flexbox; Just for centering the text
+            If you comment this out the grid will still function */
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            justify-content: center;
+        }
+        .num {
+            grid-row: 1 / 2;
+        }
+        .den {
+            grid-row: 2 / 3;
+            border-top: 1px solid black;
+        }
+    </style>
+    <!-- https://stackoverflow.com/questions/3885018/active-pseudo-class-doesnt-work-in-mobile-safari -->
+    <body ontouchstart="">
+        <div id="fade"></div>
+
+        <a id="home" href="../index.html"><div class="material-icons" style="font-size: 50px;">home</div></a>
+        <a id="list" href="../index.html"><div class="material-icons" style="font-size: 50px;">view_list</div></a>
+        <button id="backToTop"><div class="material-icons" style="font-size: 50px;">arrow_upward</div></button>
+
+        <div class="section" style="background-color: var(--accent); color: var(--white); padding-top: 15vh;">
+            <div id="title">siMple css tips</div>
+            <div id="subtitle">By Luke Arcamo — July 28, 2021</div>
+            Throughout my web development journey (especially while making this website), I have come across various problems and their interesting solutions.
+            Here is a collection of some of them, which may potentially be useful to you.
+            Perhaps in the future there will be better ways to implement these features, perhaps supported within CSS itself.
+        </div>
+        <div class="section" style="background-color: var(--white); padding-top: 10vh;">
+            <h2>responsiVe sizing With VieWport units</h2>
+            <p>
+                I've always found media queries somewhat messy, having to redefine an element twice, with each style depending on hard parameter boundaries.
+                Using viewport relative units in certain properties are a great alternative, but sometimes, elements can become too small or too large
+                depending on the viewport size. By adding the minimum and maximum values, we can limit them to a readable size.
+            </p>
+            <p>
+                There are two ways to do this: using the CSS math functions (<code>min</code>, <code>max</code>, <code>clamp</code>),
+                or by using the <code>calc</code> function in case your browser does not support the other functions.
+                Visit <a class="link" href="https://caniuse.com/css-math-functions">https://caniuse.com/css-math-functions</a> and <a class="link" href="https://caniuse.com/calc">https://caniuse.com/calc</a>
+                to see browser support.
+            </p>
+            <p>
+                This can be used for any property that controls the size of something. I often use this trick for <code>font-size</code>:
+            </p>
+<pre><code class="css">div {
+    font-size: max(2vh, 18px);
+}</code></pre>
+            <p>
+                For the <code>width</code> and <code>height</code> properties, you can also use the <code>min/max-width/height</code>
+                properties which have better browser support than the math functions:
+            </p>
+<pre><code class="css">div {
+    width: 50vw;
+    height: 50vh;
+    min-width: 200px;
+    min-height: 200px;
+}</code></pre>
+            <p>
+                You can even use this for <code>border-width</code>, although here the size changes are so minuscule that you may simply want to use a fixed size:
+            </p>
+<pre><code class="css">div {
+    border-width: min(2vw, 10px);
+    /* You can use math functions within the short form as well */
+    border: min(2vw, 10px) solid black;
+}</code></pre>   
+        </div>
+        <div class="section" style="background-color: var(--white);">
+            <h2>Aspect rAtios With VieWport units</h2>
+            <p>
+                The idea here is that since the <code>vw</code> and <code>vh</code> relative units are accessible in both width and height properties,
+                if you use the same units for both of them, you can maintain an aspect ratio. This, in combination with the previous tip (using min width and height) allows for responsive aspect ratio boxes.
+                The downside here is that you cannot base the aspect ratio on a parent element; it must be relative to the viewport.
+            </p>
+            <p>
+                Edit: There is actually an <code>aspect-ratio</code> property that has been well supported for a while now. I think that's the better option, but this method is still available in case you need it.
+            </p>
+<pre><code class="css">.aspect-16-9 {
+    width: 16vw;
+    height: 9vw;
+    min-width: 160px;
+    min-height: 90px;
+}
+.aspect-1-2 {
+    width: 8vw;
+    height: 16vw;
+    min-width: 160px;
+    min-height: 320px;
+}</code></pre>
+            <div class="aspect-16-9">
+                This div has a 16:9 aspect ratio.
+            </div>
+            <div class="aspect-1-2">
+                This div has a 1:2 aspect ratio.
+            </div>
+        </div>
+        <div class="section" style="background-color: var(--white);">
+            <h2>MAtheMAtical frActions using css grids</h2>
+            <p>
+                CSS grids can be useful if you have two elements which you want to maintain the ratio relative to each other even when scaling, without specifying an explicit size for any of them.
+                This sounds confusing, so I'll use math fractions to illustrate.
+            </p>
+            <p>
+                Suppose you want to display an inline fraction using just HTML (I know there are js libraries for this, and perhaps in the future there will be native HTML support for math functions but, bear with me).
+                You can use flexboxes, inline divs that wrap, or floating divs that wrap, but what if either the numerator or denominator was taller than the other half?
+                Grids can solve this because you can specify ratios between cells, and without specifying heights for them which is useful if the grid is inline. This means that if one cell were to expand due to its content, the other cells would be adjusted proportionately regardless of their own content.
+            </p>
+<pre><code class="css">.fraction {
+    display: inline-grid;
+    grid-template-rows: 1fr 1fr; /* Force equal height for rows */
+}
+.numerator, .denominator {
+    grid-column: 1 / 2;
+}
+.numerator {
+    grid-row: 1 / 2;
+}
+.denominator {
+    grid-row: 2 / 3;
+}</code></pre>
+            <p>
+                Notice how the numerator is as tall as the denominator even though its content is smaller:
+            </p>
+            <div class="math">
+                2.123 +&nbsp;
+                <div class="frac">
+                    <div class="num sm">
+                        213x
+                    </div>
+                    <div class="den">
+                        41x +&nbsp;
+                        <div class="frac">
+                            <div class="num">213x</div>
+                            <div class="den">41x + 5</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section" style="background-color: var(--white);">
+            <h2>color pAlettes using custoM properties</h2>
+            <p>
+                This is a very short and simple trick I used on this website so that I didn't have to copy color codes everywhere,
+                and so that one change to the theme affects the whole site.
+                On a CSS file which is used by every page on this site, I put all my colors as custom properties under the root element.
+                This way, I can use their values anywhere on the website, on any element.
+            </p>
+<pre><code class="css">/* In your main css file */
+:root {
+    /* All color formats work */
+    --light: #ffffff;
+    --accent: rgb(255, 0, 0);
+    --textColor: hsl(0deg, 0%, 0%);
+}
+/* Wherever you need the color */
+div {
+    color: var(--textColor);
+    background: var(--light);
+}
+nav {
+    color: var(--light);
+    border: 4px solid var(--accent);
+}</code></pre>
+        </div>
+        <div class="section" style="background-color: var(--white);">
+            <h2>chAnge teXt depending on deVice</h2>
+            <p>
+                In some situations, the behaviour of an element may be different between a laptop/desktop and a mobile device. Sometimes, you may want to also change text
+                depending on the device. You could do this with javascript, but you can also just use CSS. By using the <code>pointer</code> media query, we can detect if
+                a device has touch controls as its primary input mechanism. Then, using pseudo-elements, we can insert text into an element.
+            </p>
+<pre><code class="css">.instructions::before {
+    content: "Click to play";
+}
+
+@media (pointer: coarse) {
+    .instructions::before {
+        content: "Tap to play";
+    }
+}</code></pre>
+        </div>
+        <div class="section" style="background-color: var(--white);">
+            <h1>sources</h1>
+            CSS Tricks complete guide to grids — <a class="link" href="https://css-tricks.com/snippets/css/complete-guide-grid/">https://css-tricks.com/snippets/css/complete-guide-grid/</a><br>
+            MDN Web Docs (various pages) — <a class="link" href="https://developer.mozilla.org/en-US/">https://developer.mozilla.org/en-US/</a><br>
+            Can I Use — <a class="link" href="https://caniuse.com/">https://caniuse.com/</a><br>
+        </div>
+        <script type="module">
+            hljs.highlightAll();
+
+            const fade = document.getElementById("fade");
+            const homeBtn = document.getElementById("home");
+            const listBtn = document.getElementById("list");
+            const backToTopBtn = document.getElementById("backToTop");
+
+            function unloadAnimation(e, url) {
+                homeBtn.style.animation = "1s ease 0s 1 normal both running slideOutTop";
+                listBtn.style.animation = "1s ease 0s 1 normal both running slideOutTop";
+                backToTopBtn.style.animation = "1s ease 0s 1 normal both running slideOutBottom";
+
+                fade.style.animation = "1s ease 0s 1 normal both running fadeOut";
+                
+                e.preventDefault();
+                setTimeout(() => window.location.href = url, 1000);
+            }
+            homeBtn.addEventListener("click", e => unloadAnimation(e, "../index.html#articles"));
+            listBtn.addEventListener("click", e => unloadAnimation(e, "../articles.html"));
+            backToTopBtn.addEventListener("click", () => window.scrollTo(0, 0));
+
+            function onScroll() {
+                backToTopBtn.style.transform = window.scrollY > 0 ? "translateY(-100%)" : "";
+            }
+            onScroll();
+            addEventListener("scroll", onScroll);
+        </script>
+    </body>
+</html>
