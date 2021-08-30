@@ -21,13 +21,13 @@ const artworks = {
                 src: "first_contact_800na.png",
                 title: "Beyond The Hill",
                 subtitle: "Digital - June 2021",
-                description: "<i>The first aliens to arrive on Kayhauhu were humans. Increased space activity around Kayhauhu attracted the attention of others who sought the resources that the pristine planet had to offer.</i><br><br>. This was a reworked version of my very first digital landscape painting. The sky remained largely intact, I only changed the grass with my new knowledge of special brushes, and I also made the horizon and the sky features slanted to make the composition more interesting."
+                description: "<i>One of the first aliens to arrive on Kayhauhu were humans. Increased space activity around Kayhauhu attracted the attention of others who sought the resources that the pristine planet had to offer.</i><br><br>. This was a reworked version of my very first digital landscape painting. The sky remained largely intact, I only changed the grass with my new knowledge of special brushes, and I also made the horizon and the sky features slanted to make the composition more interesting."
             },
             {
                 src: "third_contact_reworked_800na.png",
                 title: "Third Contact",
                 subtitle: "Digital - December 2019",
-                description: "<i>When exactly the second species arrived is unclear; a plethora of calendars and unstable celestial conditions makes long-term timekeeping unreliable.</i><br><br>This was the second digital landscape painting I ever did. I boosted the contrast to hide the mistakes in the shadows 🤡 but besides that, these clouds are one of the most unique ones I've made so far."
+                description: "<i>When exactly the third species arrived is unclear; a plethora of calendars and unstable celestial conditions makes long-term timekeeping unreliable.</i><br><br>This was the second digital landscape painting I ever did. I boosted the contrast to hide the mistakes in the shadows 😔 but besides that, these clouds are one of the most unique ones I've made so far."
             },
             {
                 src: "fishless_reworked_800na.png",
