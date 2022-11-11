@@ -276,6 +276,12 @@ const articles = {
             date: "July 27, 2021",
             description: "A list of helpful online resources which I've found about computer graphics, web development, or coding in general."
         },
+        {
+            link: "articles/book_reviews.html",
+            title: "Book Reviews",
+            date: "November 9, 2022 - Now (updated periodically)",
+            description: "A list of books I've read and my thoughts on them."
+        },
     ]
 };
 
