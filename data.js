@@ -107,13 +107,13 @@ const artworks = {
             {
                 src: "mariya_800na.png",
                 title: "竹内 まりや",
-                subtitle: "Digital - December 2021",
+                subtitle: "Digital - October 2021",
                 description: "Mariya Takeuchi's famous album covers colorized. May her music and the impact of city pop never be forgotten. Again, experimenting with capturing likeness. The original reference was high-contrast, so some of the shadows and lights are a bit overblown. Nevertheless, I think I did well, along with the clothes and the hair."
             },
             {
                 src: "consumer_800na.png",
                 title: "The Consumer",
-                subtitle: "Digital - December 2021",
+                subtitle: "Digital - September 2021",
                 description: "Experimented with halftone and sketching on a phone. Inspired by the artwork of Katerina Belikova (@ninjajo_art on Instagram). As always, hands are the artist's bane, so don't look too closely at them. As for this consumer, their bane is the lies & vanities fed by those above them."
             },
             // {
