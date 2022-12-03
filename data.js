@@ -90,7 +90,7 @@ const artworks = {
                 src: "portrait_800na.png",
                 title: "Self-Portrait",
                 subtitle: "Digital - April 2021",
-                description: "\"I am Narcissus and my little zoom square is my lake\"<br>— @somfeelingood on twitter<br><br>During one of my online classes, the natural lighting from my window was stunning so I painted my little thumbnail. I was particularly captivated by how my webcam omits details in extreme light and shadow. This is also the portrait I use on my about page."
+                description: "\"I am Narcissus and my little zoom square is my lake\"<br>— @somfeelingood on Twitter<br><br>During one of my online classes, the natural lighting from my window was stunning so I painted my little thumbnail. I was particularly captivated by how my webcam omits details in extreme light and shadow. This is also the portrait I use on my about page."
             },
             {
                 src: "airpods_800na.png",
@@ -99,11 +99,29 @@ const artworks = {
                 description: "This was a recreation of the famous painting by Johannes Vermeer, my favourite painting of all time. I added airpods to make it creative and modern, but then <i>Google Images</i> shatters my dreams and shows me existing memes of this same idea. Nevertheless, this was my first digital portrait painting, which inspired me to paint more portraits."
             },
             {
-                src: "hair_reworked_800na.png",
-                title: "The Gifts of Photosynthesis and Hair",
-                subtitle: "Digital - May 2021",
-                description: "<i>Centuries of genetic mixing and experimentation has altered the flora and fauna of Kayhauhu. This particular girl can photosynthesize like most native creatures, yet she is part of the Yanwa population's 20% who possess hair like humans. Horizontal pupils are a vestigial evolutionary trait from the Yanwa who were hunted.</i><br><br>I wasn't particularly happy about this painting, something just feels off about it, whether it's the facial proportions or the shading. I managed to fix it a bit, because the original was a lot worse."
+                src: "louise_800na.png",
+                title: "Louise Speaks to General Shang",
+                subtitle: "Digital - December 2021",
+                description: "My favourite movie is the 2016 movie Arrival. I loved Villeneuve's sleek yet human visual interpretation of Ted Chiang's original short story, so it is fitting that I should do a movie study on this climactic scene. I hoped to capture Amy Adams' likeness and emotions, but the soft lighting made it difficult. These two are aspects I wish to practice more in my portraits."
             },
+            {
+                src: "mariya_800na.png",
+                title: "竹内 まりや",
+                subtitle: "Digital - December 2021",
+                description: "Mariya Takeuchi's famous album covers colorized. May her music and the impact of city pop never be forgotten. Again, experimenting with capturing likeness. The original reference was high-contrast, so some of the shadows and lights are a bit overblown. Nevertheless, I think I did well, along with the clothes and the hair."
+            },
+            {
+                src: "consumer_800na.png",
+                title: "The Consumer",
+                subtitle: "Digital - December 2021",
+                description: "Experimented with halftone and sketching on a phone. Inspired by the artwork of Katerina Belikova (@ninjajo_art on Instagram). As always, hands are the artist's bane, so don't look too closely at them. As for this consumer, their bane is the lies & vanities fed by those above them."
+            },
+            // {
+            //     src: "hair_reworked_800na.png",
+            //     title: "The Gifts of Photosynthesis and Hair",
+            //     subtitle: "Digital - May 2021",
+            //     description: "<i>Centuries of genetic mixing and experimentation has altered the flora and fauna of Kayhauhu. This particular girl can photosynthesize like most native creatures, yet she is part of the Yanwa population's 20% who possess hair like humans. Horizontal pupils are a vestigial evolutionary trait from the Yanwa who were hunted.</i><br><br>I wasn't particularly happy about this painting, something just feels off about it, whether it's the facial proportions or the shading. I managed to fix it a bit, because the original was a lot worse."
+            // },
             {
                 src: "hunter_800na.png",
                 title: "A Young Blö Hunter",
@@ -149,6 +167,12 @@ const artworks = {
         color: "dark",
         path: "imgs/general/",
         imgs: [
+            {
+                src: "guild_navigator_800na.png",
+                title: "Guild Navigator",
+                subtitle: "Digital - July 2022",
+                description: "My interpretation of a guild navigator from Dune. I wanted to somehow find a way to make a bloated fish-human elegant and not-gross? The answer was 'axolotls', and while I was at it I made the representatives futuristic-Aztec inspired as well."
+            },
             {
                 src: "nomatter_800na.png",
                 title: "No Matter What Happens",
@@ -219,33 +243,6 @@ const artworks = {
     }
 };
 
-const code = {
-    "some projects": {
-        bg: "black",
-        color: "white",
-        description: "Blah Blah Blah.",
-        path: "imgs/code/",
-        imgs: [
-            {
-                src: "random_image.png",
-                title: "Random Thing",
-                demo: "https://lukearcamo.github.io/The_Backrooms/",
-                github: "https://github.com/lukearcamo/The_Backrooms/",
-                subtitle: "JS (WebGL with THREE.js)",
-                description: "This is a description of the piece of code."
-            },
-            {
-                src: "abc.png",
-                title: "A Thing",
-                demo: "https://github.com/lukearcamo",
-                github: "https://github.com/lukearcamo",
-                subtitle: "C++ (OpenGL)",
-                description: "This is a description of the piece of code."
-            }
-        ]
-    }
-};
-
 const articles = {
     "graphics": [
         {
@@ -279,10 +276,10 @@ const articles = {
         {
             link: "articles/book_reviews.html",
             title: "Book Reviews",
-            date: "November 9, 2022 - Now (updated periodically)",
-            description: "A list of books I've read and my thoughts on them."
+            date: "December 2, 2022",
+            description: "A list of books I've read and my thoughts on them. Created November 9, 2022, updated periodically."
         },
     ]
 };
 
-export { artworks, code, articles };
+export { artworks, articles };
