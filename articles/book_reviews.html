@@ -17,16 +17,11 @@
         li { margin-top: 0.75em; }
         .section { padding: 0vh 30% 10vh 30%; }
         .spoiler {
-            background-color: var(--dark);
-            color: var(--dark);
+            background-color: currentColor;
+            transition: background-color 0.3s;
         }
-        .spoiler::before {
-            background-color: var(--white);
-            color: var(--dark);
-            content: "[spoiler, highlight to reveal]";
-        }
-        .spoiler::selection {
-            color: var(--white);
+        .spoiler:hover {
+            background-color: transparent;
         }
         @media only screen and (max-width: 900px) {
             .section { padding: 0vh 10% 10vh 10%; }
@@ -364,7 +359,7 @@
             </ul>
             
             <h3><i>Caves of Steel</i> <small>by Isaac Asimov</small></h3>
-            <small>December 5 - December 12, 2022</small> | ★★★★☆
+            <small>December 13 - December 19, 2022</small> | ★★★★☆
             <ul>
                 <li>Overall, I liked the plot, but not so much the worldbuilding, though I understand it.</li>
                 <li>Plot — Very engaging, twists do not feel forced</li>
